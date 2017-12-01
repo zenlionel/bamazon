@@ -110,20 +110,21 @@ function buyItem() {
                         
                     }
                 }
-                if (chosenItem < parseInt(answer.choice.stock_quantity)) {
+                if (chosenItem.stock_quantity > parseInt(answer.buy)) {
                     console.log(answer);
                     console.log(answer.buy);
                     connection.query(
                         "UPDATE products SET ? WHERE ?", [{
-                                stock_quantity: answer.choice.stock_quantity - answer.buy
+                                stock_quantity: chosenItem.stock_quantity - parseInt(answer.buy)
                             },
                             {
-                                product_id: chosenItem.product_id
+                                item_id: chosenItem.item_id
                             }
                         ],
-                        function (error) {
-                            if (error) throw err;
+                        function (err) {
+                            if (err) throw err;
                             console.log("Bought succesfully");
+                            
                             start();
                         }
                     );
