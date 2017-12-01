@@ -65,22 +65,34 @@ function showInfo() {
         });
 }
 
+function choices() {
+    var choiceArray = [];
+    for (var i = 0; i < results.length; i++) {
+        choiceArray.push(results[i].product_name);
+    }
+    return choiceArray;
+}
+
+
 function buyItem() {
-    
+
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
-       
+
+        function choices() {
+            var choiceArray = [];
+            for (var i = 0; i < results.length; i++) {
+                choiceArray.push(results[i].product_name);
+            }
+            return choiceArray;
+        }
+
+        var choi = choices();
         inquirer
             .prompt([{
-                    name: "Product choice",
+                    name: "choice",
                     type: "rawlist",
-                    choices: function () {
-                        var choiceArray = [];
-                        for (var i = 0; i < results.length; i++) {
-                            choiceArray.push(results[i].product_name);
-                        }
-                        return choiceArray;
-                    },
+                    choices: choi,
                     message: "What item would you like to buy?"
                 },
                 {
@@ -91,16 +103,19 @@ function buyItem() {
             ])
             .then(function (answer) {
                 var chosenItem;
+                
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].product_name === answer.choice) {
                         chosenItem = results[i];
+                        
                     }
                 }
-                if (chosenItem.buy < parseInt(answer.stock)) {
-                    
+                if (chosenItem < parseInt(answer.choice.stock_quantity)) {
+                    console.log(answer);
+                    console.log(answer.buy);
                     connection.query(
-                        "UPDATE stock_quantity SET ? WHERE ?", [{
-                                stock_quantity: answer.buy
+                        "UPDATE products SET ? WHERE ?", [{
+                                stock_quantity: answer.choice.stock_quantity - answer.buy
                             },
                             {
                                 product_id: chosenItem.product_id
@@ -119,4 +134,4 @@ function buyItem() {
             });
     });
 }
-//I got lost in my code :( I don't like inquirer...
+//RAWR >:/
